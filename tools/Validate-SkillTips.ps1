@@ -61,7 +61,7 @@ $scores = @($history.finishes | ForEach-Object {
     $skillScore = 0
     foreach ($skill in $chara.skill_array) { $skillScore += [UmamusumeResponseAnalyzer.SkillScoring]::Estimate($catalog.Skills[$skill.skill_id], $chara, $skill.level) }
     $statScore = 0
-    foreach ($stat in @($chara.speed,$chara.stamina,$chara.power,$chara.guts,$chara.wiz)) { $statScore += [UmamusumeResponseAnalyzer.Database]::StatusToPoint[$stat] }
+    foreach ($stat in @($chara.speed,$chara.stamina,$chara.power,$chara.guts,$chara.wiz)) { $statScore += [UmamusumeResponseAnalyzer.Database]::StatusToPoint($stat) }
     $residual = $trained[0].rank_score - $statScore - $skillScore
     Assert-Equal $expected.residual $residual 'Calibrated score residual'
     @{ packet=$_.path; actual=$trained[0].rank_score; estimated=$statScore+$skillScore; skillScore=$skillScore; statScore=$statScore
@@ -78,7 +78,7 @@ $archiveResiduals = @(foreach ($trained in $archive) {
     $skillScore = 0
     foreach ($skill in $chara.skill_array) { $skillScore += [UmamusumeResponseAnalyzer.SkillScoring]::Estimate($catalog.Skills[$skill.skill_id], $chara, $skill.level) }
     $statScore = 0
-    foreach ($stat in @($chara.speed,$chara.stamina,$chara.power,$chara.guts,$chara.wiz)) { $statScore += [UmamusumeResponseAnalyzer.Database]::StatusToPoint[$stat] }
+    foreach ($stat in @($chara.speed,$chara.stamina,$chara.power,$chara.guts,$chara.wiz)) { $statScore += [UmamusumeResponseAnalyzer.Database]::StatusToPoint($stat) }
     $trained.rank_score - $statScore - $skillScore
 })
 $residualDistribution = @($archiveResiduals | Group-Object | Sort-Object { [int]$_.Name } | ForEach-Object {
@@ -102,11 +102,11 @@ $archiveCalibration = @{
 Assert-Equal 516 $archiveCalibration.horses 'Archive horse count'
 Assert-Equal 17114 $archiveCalibration.skillRecords 'Archive skill record count'
 Assert-Equal 773 $archiveCalibration.uniqueSkillIds 'Archive distinct skill count'
-Assert-Equal 511 $archiveCalibration.exactMatches 'Archive exact score matches'
-Assert-Equal 1 $archiveCalibration.maximumAbsoluteResidual 'Archive maximum score residual'
-Assert-Equal 5 $archiveCalibration.totalAbsoluteResidual 'Archive total absolute score residual'
-Assert-Equal '454,474,475,481,500' ($unexplained.index -join ',') 'Unexplained archive samples'
-$expectedDistribution = @{ '-1'=5; '0'=511 }
+Assert-Equal 516 $archiveCalibration.exactMatches 'Archive exact score matches'
+Assert-Equal 0 $archiveCalibration.maximumAbsoluteResidual 'Archive maximum score residual'
+Assert-Equal 0 $archiveCalibration.totalAbsoluteResidual 'Archive total absolute score residual'
+Assert-Equal 0 $unexplained.Count 'Unexplained archive samples'
+$expectedDistribution = @{ '0'=516 }
 Assert-Equal $expectedDistribution.Count $residualDistribution.Count 'Archive residual buckets'
 foreach ($bucket in $residualDistribution) {
     Assert-Equal $expectedDistribution[[string]$bucket.residual] $bucket.count "Archive residual $($bucket.residual)"

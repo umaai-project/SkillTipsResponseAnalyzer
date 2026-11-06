@@ -14,7 +14,7 @@ Host 的 `skill_planning.br` 提供静态定义。条件以服务器下发的 `c
 
 候选来自技能提示、觉醒技能、已持有技能和已解除技能；普通技能展开同组白技升级链，金技须有对应解锁来源。没有提示也能计算已持有白技升级及紫技解除后的正向购买。
 
-评分按 master 的脚质、距离标签分别取最高适性，乘完两类倍率后每个技能取整一次。最优性仅针对当前规则和预计评分模型；1199 个独立历史状态中，1152 个完全吻合，47 个预计总分高 1 分，差异集中在 2000 以上属性估算段。属性表保持原值，未加补偿；界面直接使用求解结果中的费用、评分和进化选择。
+技能评分按 master 的脚质、距离标签分别取最高适性，乘完两类倍率后每个技能取整一次。属性评分调用 Host 的 `Database.StatusToPoint(int)` 按分段公式计算。最优性仅针对当前规则和预计评分模型；高属性实测仅覆盖速度、最高 2338，更高数值及其他四维的高段按公式外推。界面直接使用求解结果中的费用、评分和进化选择。
 
 ## 排序设置
 
@@ -24,7 +24,7 @@ workspace 中的排序切换只影响当前结果，不写入配置；下一次�
 
 ## Hachimi 技能选择
 
-游戏侧桥接面向 Windows x64 日服及 Hachimi v3，使用 `umamusume-20261026-il2cpp-x64` profile。本版本要求包含单次取整评分的 Host 及配套 `skill_planning.br`；本地验证使用 SDK `2026.11.1.2`。将 `SkillTipsResponseAnalyzer.zip` 放入 URA 数据目录的 `Plugins/` 后重启 URA；默认数据目录为 `%LOCALAPPDATA%/UmamusumeResponseAnalyzer`。Hachimi 桥接 DLL 独立安装，见 [原生桥接说明](native/README.md)。
+游戏侧桥接面向 Windows x64 日服及 Hachimi v3，使用 `umamusume-20261026-il2cpp-x64` profile。本版本要求包含单次取整技能评分、SDK `2026.11.6` 的 `Database.StatusToPoint(int)` 方法的 Host 和配套 `skill_planning.br`。属性评分接口从列表改为方法，插件须配套重新编译。将 `SkillTipsResponseAnalyzer.zip` 放入 URA 数据目录的 `Plugins/` 后重启 URA；默认数据目录为 `%LOCALAPPDATA%/UmamusumeResponseAnalyzer`。Hachimi 桥接 DLL 独立安装，见 [原生桥接说明](native/README.md)。
 
 OR-Tools 的 NuGet 原生依赖随 ZIP 提供；系统须安装 [Microsoft Visual C++ x64 运行库](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist/)，这是 [OR-Tools Windows 运行要求](https://developers.google.com/optimization/install/dotnet/binary_windows)。缺失时会报告原生组件加载失败。
 

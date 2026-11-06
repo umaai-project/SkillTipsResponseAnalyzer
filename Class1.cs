@@ -156,8 +156,8 @@ namespace SkillTipsResponseAnalyzer
                     }
                     return new SkillTipsDisplaySkill(id, name, choice.Cost, gain);
                 }).OrderBy(x => catalog.Skills[x.SkillId].DisplayOrder).ThenBy(x => x.SkillId).ToArray();
-            var status = Database.StatusToPoint[chara.speed] + Database.StatusToPoint[chara.stamina]
-                + Database.StatusToPoint[chara.power] + Database.StatusToPoint[chara.guts] + Database.StatusToPoint[chara.wiz];
+            var status = Database.StatusToPoint(chara.speed) + Database.StatusToPoint(chara.stamina)
+                + Database.StatusToPoint(chara.power) + Database.StatusToPoint(chara.guts) + Database.StatusToPoint(chara.wiz);
             var delta = checked((int)result.Score - input.Problem.BaselineScore);
             var total = checked((int)result.Score + status);
             var rank = GradeRank.GradeToRank.First(x => x.Min <= total && total <= x.Max);
